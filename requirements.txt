@@ -1,11 +1,5 @@
-streamlit
-fitz  # PyMuPDF
-python-docx
+pymupdf
 spacy
-selenium
+python-docx
 pandas
-beautifulsoup4
-fuzzywuzzy
-scikit-learn
-plotly
-matplotlib
+streamlit
