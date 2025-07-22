@@ -1,0 +1,11 @@
+streamlit
+fitz  # PyMuPDF
+python-docx
+spacy
+selenium
+pandas
+beautifulsoup4
+fuzzywuzzy
+scikit-learn
+plotly
+matplotlib
