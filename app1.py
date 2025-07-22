@@ -77,7 +77,6 @@ else:
     """, unsafe_allow_html=True)
 
 # Sidebar Assistant
-st.sidebar.button("🌗 Toggle Dark Mode", on_click=toggle_theme)
 st.sidebar.image("https://cdn-icons-png.flaticon.com/512/10290/10290594.png", width=70)
 st.sidebar.markdown("### 🤖 JobFit Assistant")
 st.sidebar.markdown("""
