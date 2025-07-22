@@ -7,13 +7,21 @@ import pandas as pd
 
 st.set_page_config(page_title="JobFit Analyzer", layout="wide", page_icon="📄")
 
-# 🌙 Theme Toggle
+# 🌗 Toggle Theme
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = False
 
+if "toggle_trigger" not in st.session_state:
+    st.session_state.toggle_trigger = False
+
 def toggle_theme():
     st.session_state.dark_mode = not st.session_state.dark_mode
-    st.experimental_rerun()  # ✅ Forces UI to refresh
+    st.session_state.toggle_trigger = True
+    
+# Hidden rerun form
+if st.session_state.toggle_trigger:
+    st.session_state.toggle_trigger = False
+    st.experimental_rerun()
 
 # Apply Theme Styles
 if st.session_state.dark_mode:
@@ -67,7 +75,6 @@ else:
 st.sidebar.button("🌗 Toggle Dark Mode", on_click=toggle_theme)
 st.sidebar.image("https://cdn-icons-png.flaticon.com/512/10290/10290594.png", width=70)
 st.sidebar.markdown("### 🤖 JobFit Assistant")
-st.sidebar.markdown(f"Current Theme: {'🌙 Dark' if st.session_state.dark_mode else '🌞 Light'}")
 st.sidebar.markdown("""
 **Step 1**: Upload your resume (PDF/DOCX)  
 **Step 2**: We extract your skills, experience, projects  
