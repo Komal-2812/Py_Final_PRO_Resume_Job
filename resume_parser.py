@@ -2,8 +2,16 @@ import fitz  # pymupdf
 import docx
 import re
 import spacy
-import subprocess
 import importlib.util
+import subprocess
+
+def ensure_model(model="en_core_web_sm"):
+    if not importlib.util.find_spec(model):
+        subprocess.run(["python", "-m", "spacy", "download", model])
+    return spacy.load(model)
+
+nlp = ensure_model()
+
 
 # Auto-install en_core_web_sm if not found
 def load_spacy_model():
@@ -13,7 +21,6 @@ def load_spacy_model():
     return spacy.load(model)
 
 nlp = load_spacy_model()
-
 
 # ✅ For PDF files uploaded via Streamlit
 def extract_text_from_pdf(file):
