@@ -1,4 +1,4 @@
-import fitz  # pymupdf
+import fitz # correct import when pymupdf is installed
 import docx
 import re
 import spacy
