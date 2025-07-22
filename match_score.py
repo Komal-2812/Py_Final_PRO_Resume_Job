@@ -12,7 +12,7 @@ def calculate_resume_score(parsed_data, job_titles):
     # Skills (match to job titles)
     skills = parsed_data.get("skills", [])
     matched_keywords = sum(1 for skill in skills for title in job_titles if skill.lower() in title.lower())
-    skill_score = min((matched_keywords / len(job_titles)) * 40, 40) if len(job_titles) > 0 else 0
+    skill_score = min((matched_keywords / len(job_titles)) * 10, 40) if len(job_titles) > 0 else 0
 
     # Experience (based on internships or experience_roles)
     experience_count = len(parsed_data.get("experience", [])) + len(parsed_data.get("experience_roles", []))
