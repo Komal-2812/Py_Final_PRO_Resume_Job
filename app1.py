@@ -1,7 +1,7 @@
 import streamlit as st
 from resume_parser import extract_text_from_pdf, extract_text_from_docx, extract_sections
 from linkedin_scraper import scrape_jobs
-from match_score import calculate_match
+from match_score import calculate_match, calculate_resume_score
 import pandas as pd
 
 st.set_page_config(page_title="JobFit Analyzer", layout="wide", page_icon="📄")
@@ -13,7 +13,7 @@ if "dark_mode" not in st.session_state:
 def toggle_theme():
     st.session_state.dark_mode = not st.session_state.dark_mode
 
-# Style (Theme Aware)
+# Apply Theme Styles
 if st.session_state.dark_mode:
     st.markdown("""
         <style>
@@ -103,10 +103,18 @@ if uploaded_file:
         else:
             st.success(f"🎯 {len(job_df)} matching job(s) found for your resume!")
 
-            # Add match score
+            # Add match score per job
             match_scores = calculate_match(parsed_data["skills"], job_df["title"])
             match_df = pd.DataFrame(match_scores)
             job_df["Match Score (%)"] = match_df["match_score"]
+
+            # Resume rating out of 100
+            rating, breakdown = calculate_resume_score(parsed_data, job_df["title"])
+            st.markdown(f"<div class='info-box'><h4>📊 Resume Rating: {rating} / 100</h4></div>", unsafe_allow_html=True)
+
+            with st.expander("🔍 See rating breakdown"):
+                for k, v in breakdown.items():
+                    st.markdown(f"- **{k}**: {int(v)} / {100 if k == 'Skills' else 20}")
 
             # Show job cards
             for _, row in job_df.iterrows():
@@ -120,7 +128,7 @@ if uploaded_file:
                     </div>
                 """, unsafe_allow_html=True)
 
-            # Download button
+            # Download CSV
             st.markdown("<div class='info-box'><h4>📥 Download Job Match Report</h4></div>", unsafe_allow_html=True)
             st.download_button(
                 label="Download as CSV",
