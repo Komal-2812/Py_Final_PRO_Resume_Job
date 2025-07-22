@@ -4,71 +4,87 @@ from linkedin_scraper import scrape_jobs
 from match_score import calculate_match
 import pandas as pd
 
-# Page setup
 st.set_page_config(page_title="JobFit Analyzer", layout="wide", page_icon="📄")
 
-# Custom white theme styling
-st.markdown("""
-    <style>
-    html, body, [class*="css"] {
-        background-color: #ffffff;
-        color: #2c3e50;
-        font-family: 'Segoe UI', sans-serif;
-    }
-    h1, h2, h3 {
-        color: #2c3e50;
-    }
-    .info-box {
-        background-color: #f9f9f9;
-        border-left: 5px solid #0073b1;
-        padding: 20px;
-        border-radius: 12px;
-        margin: 25px 0;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.04);
-    }
-    .job-card {
-        background-color: #ffffff;
-        border: 1px solid #eaeaea;
-        border-radius: 12px;
-        padding: 15px;
-        margin-bottom: 16px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-        transition: transform 0.2s ease-in-out;
-    }
-    .job-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    a {
-        color: #0073b1 !important;
-        font-weight: 600;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# 🌙 Theme Toggle
+if "dark_mode" not in st.session_state:
+    st.session_state.dark_mode = False
 
-# Sidebar Guide
-st.sidebar.image("https://cdn-icons-png.flaticon.com/512/10290/10290594.png", width=80)
-st.sidebar.markdown("#### 🤖 JobFit Assistant Guide")
+def toggle_theme():
+    st.session_state.dark_mode = not st.session_state.dark_mode
+
+# Style (Theme Aware)
+if st.session_state.dark_mode:
+    st.markdown("""
+        <style>
+        html, body, [class*="css"] {
+            background-color: #121212 !important;
+            color: #f5f5f5 !important;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #ffffff;
+        }
+        a { color: #00f2fe !important; }
+        .info-box, .job-card {
+            background-color: #1e1e1e !important;
+            color: #f0f0f0;
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0px 4px 12px rgba(0, 255, 255, 0.05);
+        }
+        </style>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+        <style>
+        html, body, [class*="css"] {
+            background-color: #ffffff !important;
+            color: #2c3e50 !important;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+        }
+        a { color: #0073b1 !important; }
+        .info-box, .job-card {
+            background-color: #f9f9f9;
+            color: #222;
+            border: 1px solid #eaeaea;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0px 2px 8px rgba(0,0,0,0.03);
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+# Sidebar Assistant
+st.sidebar.button("🌗 Toggle Dark Mode", on_click=toggle_theme)
+st.sidebar.image("https://cdn-icons-png.flaticon.com/512/10290/10290594.png", width=70)
+st.sidebar.markdown("### 🤖 JobFit Assistant")
 st.sidebar.markdown("""
-📄 **Step 1:** Upload your resume (PDF or DOCX)  
-🔍 **Step 2:** We extract your skills, projects, experience  
-🚀 **Step 3:** Click **Find Jobs** to see matching roles  
-📥 **Step 4:** Download the full ATS-ready report
-
+**Step 1**: Upload your resume (PDF/DOCX)  
+**Step 2**: We extract your skills, experience, projects  
+**Step 3**: Click **Find Jobs** to match your profile  
+**Step 4**: Download a full report or apply directly  
+---
 💡 *Tips:*  
-- Use clear role titles & keywords (e.g., Python, Excel, Analyst)  
-- Include internships or projects with outcomes
+- Include real-world projects or internships  
+- Add key skills like SQL, Excel, Python, etc.
 """)
 
-# Title
+# Title & Description
 st.markdown("<h1 style='text-align:center;'>📄 JobFit Analyzer</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center;'>💼 Resume Intelligence & Job Matching for Students & Recruiters</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center;'>💼 Smart Resume Matcher & Job Finder for Students and Recruiters</p>", unsafe_allow_html=True)
 
-# File uploader
+# Upload Resume
 uploaded_file = st.file_uploader("✨ Upload your resume (PDF or DOCX)", type=["pdf", "docx"])
 
 if uploaded_file:
-    with st.spinner("🔍 Extracting resume details..."):
+    with st.spinner("🔍 Parsing your resume..."):
         if uploaded_file.type == "application/pdf":
             text = extract_text_from_pdf(uploaded_file)
         else:
@@ -79,28 +95,28 @@ if uploaded_file:
     st.json(parsed_data)
 
     if st.button("🚀 Find Matching Jobs in India"):
-        with st.spinner("🔗 Searching job database for matches..."):
+        with st.spinner("🔗 Searching job listings..."):
             job_df = scrape_jobs(parsed_data)
 
         if job_df.empty:
-            st.warning("😕 No jobs found. Try updating your resume or use broader skills.")
+            st.warning("😕 No jobs found. Try a more complete resume.")
         else:
-            st.success(f"🎯 Found {len(job_df)} matching jobs for your resume!")
+            st.success(f"🎯 {len(job_df)} matching job(s) found for your resume!")
 
-            # Score calculation
+            # Add match score
             match_scores = calculate_match(parsed_data["skills"], job_df["title"])
             match_df = pd.DataFrame(match_scores)
             job_df["Match Score (%)"] = match_df["match_score"]
 
-            # Job cards
+            # Show job cards
             for _, row in job_df.iterrows():
                 st.markdown(f"""
                     <div class='job-card'>
                         <h4>💼 {row['title']}</h4>
                         <p><b>🏢 Company:</b> {row['company']}<br>
                         <b>📍 Location:</b> {row['location']}<br>
-                        <b>📊 Match Score:</b> {row['Match Score (%)']}%</p>
-                        <a href='{row['job_link']}' target='_blank'>🔗 Apply Now</a>
+                        <b>📊 Match:</b> {row['Match Score (%)']}%</p>
+                        <a href="{row['job_link']}" target="_blank">🔗 Apply Now</a>
                     </div>
                 """, unsafe_allow_html=True)
 
@@ -113,4 +129,4 @@ if uploaded_file:
                 mime="text/csv"
             )
 else:
-    st.info("👈 Upload your resume to start your JobFit analysis.")
+    st.info("👈 Upload your resume to begin your job-matching journey.")
