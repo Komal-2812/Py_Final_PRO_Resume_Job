@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 from resume_parser import extract_text_from_pdf, extract_text_from_docx, extract_sections
 from linkedin_scraper import scrape_jobs
 from match_score import calculate_match, calculate_resume_score
@@ -12,6 +13,7 @@ if "dark_mode" not in st.session_state:
 
 def toggle_theme():
     st.session_state.dark_mode = not st.session_state.dark_mode
+    st.experimental_rerun()  # ✅ Forces UI to refresh
 
 # Apply Theme Styles
 if st.session_state.dark_mode:
@@ -65,6 +67,7 @@ else:
 st.sidebar.button("🌗 Toggle Dark Mode", on_click=toggle_theme)
 st.sidebar.image("https://cdn-icons-png.flaticon.com/512/10290/10290594.png", width=70)
 st.sidebar.markdown("### 🤖 JobFit Assistant")
+st.sidebar.markdown(f"Current Theme: {'🌙 Dark' if st.session_state.dark_mode else '🌞 Light'}")
 st.sidebar.markdown("""
 **Step 1**: Upload your resume (PDF/DOCX)  
 **Step 2**: We extract your skills, experience, projects  
