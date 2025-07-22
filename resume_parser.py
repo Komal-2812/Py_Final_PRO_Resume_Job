@@ -2,8 +2,8 @@ import fitz  # pymupdf
 import docx
 import re
 import spacy
-import importlib.util
 import subprocess
+import importlib.util
 
 def ensure_model(model="en_core_web_sm"):
     if not importlib.util.find_spec(model):
@@ -11,7 +11,6 @@ def ensure_model(model="en_core_web_sm"):
     return spacy.load(model)
 
 nlp = ensure_model()
-
 
 # Auto-install en_core_web_sm if not found
 def load_spacy_model():
