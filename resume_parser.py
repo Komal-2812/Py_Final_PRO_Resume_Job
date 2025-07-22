@@ -2,8 +2,8 @@ import fitz  # pymupdf
 import docx
 import re
 import spacy
-import subprocess
 import importlib.util
+import subprocess
 
 def ensure_model(model="en_core_web_sm"):
     if not importlib.util.find_spec(model):
