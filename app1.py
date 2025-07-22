@@ -7,21 +7,26 @@ import pandas as pd
 
 st.set_page_config(page_title="JobFit Analyzer", layout="wide", page_icon="📄")
 
-# 🌗 Toggle Theme
+import streamlit as st
+
+# Initialize session state keys
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = False
+if "toggle_requested" not in st.session_state:
+    st.session_state.toggle_requested = False
 
-if "toggle_trigger" not in st.session_state:
-    st.session_state.toggle_trigger = False
-
+# Toggle theme callback
 def toggle_theme():
-    st.session_state.dark_mode = not st.session_state.dark_mode
-    st.session_state.toggle_trigger = True
-    
-# Hidden rerun form
-if st.session_state.toggle_trigger:
-    st.session_state.toggle_trigger = False
-    st.experimental_rerun()
+    st.session_state["dark_mode"] = not st.session_state["dark_mode"]
+    st.session_state["toggle_requested"] = True
+
+# Button
+st.sidebar.button("🌗 Toggle Dark Mode", on_click=toggle_theme)
+
+# Perform rerun after flag is set (only once)
+if st.session_state.toggle_requested:
+    st.session_state.toggle_requested = False
+    st.stop()  # ✅ End run so Streamlit will rerun cleanly on next pass
 
 # Apply Theme Styles
 if st.session_state.dark_mode:
